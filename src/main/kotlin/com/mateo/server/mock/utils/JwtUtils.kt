@@ -1,6 +1,6 @@
 package com.mateo.server.mock.utils
 
-import com.mateo.server.mock.service.UserDetailsImpl
+import com.mateo.server.mock.service.authentication.UserDetailsImpl
 import io.jsonwebtoken.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

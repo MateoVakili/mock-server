@@ -1,11 +1,10 @@
-package com.mateo.server.mock.service
+package com.mateo.server.mock.service.authentication
 
 import com.mateo.server.mock.config.error.MockServerExceptions
-import com.mateo.server.mock.entity.RefreshToken
-import com.mateo.server.mock.repository.RefreshTokenRepository
-import com.mateo.server.mock.repository.UserRepository
+import com.mateo.server.mock.entity.authentication.RefreshToken
+import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
+import com.mateo.server.mock.repository.authentication.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant

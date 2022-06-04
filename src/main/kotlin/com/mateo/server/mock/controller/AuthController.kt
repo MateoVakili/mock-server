@@ -1,14 +1,14 @@
 package com.mateo.server.mock.controller
 
 import com.mateo.server.mock.config.error.MockServerExceptions
-import com.mateo.server.mock.entity.Role
-import com.mateo.server.mock.entity.RoleType
-import com.mateo.server.mock.entity.Userentity
-import com.mateo.server.mock.model.*
-import com.mateo.server.mock.repository.UserRepository
-import com.mateo.server.mock.service.RefreshTokenService
-import com.mateo.server.mock.service.UserDetailsImpl
-import com.mateo.server.mock.utils.AuthenticationEntryPointJwt
+import com.mateo.server.mock.entity.authentication.Role
+import com.mateo.server.mock.entity.authentication.RoleType
+import com.mateo.server.mock.entity.authentication.Userentity
+import com.mateo.server.mock.model.authentication.*
+import com.mateo.server.mock.repository.authentication.UserRepository
+import com.mateo.server.mock.service.authentication.RefreshTokenService
+import com.mateo.server.mock.service.authentication.UserDetailsImpl
+import com.mateo.server.mock.config.authentication.AuthenticationEntryPointJwt
 import com.mateo.server.mock.utils.JwtUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -54,7 +54,7 @@ class AuthController {
             token?.let { refreshToken ->
                 logger.info("Refresh token: $refreshToken was created for user: ${loginRequest.username}")
                 return ResponseEntity.ok(
-                    SignupResponse(
+                    SigninResponse(
                         accessToken = jwtUtils.generateJwtToken(userDetails),
                         refreshToken = refreshToken,
                         id = userDetails.id,

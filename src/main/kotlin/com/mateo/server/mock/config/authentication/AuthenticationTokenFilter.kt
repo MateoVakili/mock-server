@@ -1,6 +1,7 @@
-package com.mateo.server.mock.utils
+package com.mateo.server.mock.config.authentication
 
-import com.mateo.server.mock.service.UserDetailsServiceImpl
+import com.mateo.server.mock.service.authentication.UserDetailsServiceImpl
+import com.mateo.server.mock.utils.JwtUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -32,15 +33,13 @@ class AuthenticationTokenFilter : OncePerRequestFilter() {
             if (jwtUtils.validateJwtToken(jwt)) {
                 val username: String = jwtUtils.getUserNameFromJwtToken(jwt)
                 val userDetails: UserDetails = userDetailsService.loadUserByUsername(username)
-                val authentication = UsernamePasswordAuthenticationToken(
-                    userDetails, null,
-                    userDetails.authorities
-                )
-                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-                SecurityContextHolder.getContext().authentication = authentication
+                UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).run {
+                    details = WebAuthenticationDetailsSource().buildDetails(request)
+                    SecurityContextHolder.getContext().authentication = this
+                }
             }
         } catch (e: Exception) {
-            Companion.logger.error("Cannot set user authentication: {}", e.message)
+            Companion.logger.error("cannot set user authentication: {}", e.message)
         }
         filterChain.doFilter(request, response)
     }

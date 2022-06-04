@@ -1,4 +1,4 @@
-package com.mateo.server.mock.model
+package com.mateo.server.mock.model.authentication
 
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank

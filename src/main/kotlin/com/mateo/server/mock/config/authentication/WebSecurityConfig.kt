@@ -1,8 +1,6 @@
-package com.mateo.server.mock.config
+package com.mateo.server.mock.config.authentication
 
-import com.mateo.server.mock.service.UserDetailsServiceImpl
-import com.mateo.server.mock.utils.AuthenticationEntryPointJwt
-import com.mateo.server.mock.utils.AuthenticationTokenFilter
+import com.mateo.server.mock.service.authentication.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -53,7 +51,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests().antMatchers("/authentication/**").permitAll()
-            .antMatchers("/app/test/**").permitAll()
             .anyRequest().authenticated()
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
     }

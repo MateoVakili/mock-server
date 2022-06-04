@@ -1,6 +1,6 @@
-package com.mateo.server.mock.service
+package com.mateo.server.mock.service.authentication
 
-import com.mateo.server.mock.entity.Userentity
+import com.mateo.server.mock.entity.authentication.Userentity
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,6 +1,6 @@
-package com.mateo.server.mock.repository
+package com.mateo.server.mock.repository.authentication
 
-import com.mateo.server.mock.entity.Userentity
+import com.mateo.server.mock.entity.authentication.Userentity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

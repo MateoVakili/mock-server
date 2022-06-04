@@ -1,4 +1,4 @@
-package com.mateo.server.mock.entity
+package com.mateo.server.mock.entity.authentication
 
 import java.time.Instant
 import javax.persistence.*
