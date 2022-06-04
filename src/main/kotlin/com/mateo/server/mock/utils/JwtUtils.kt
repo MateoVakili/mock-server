@@ -3,16 +3,28 @@ package com.mateo.server.mock.utils
 import com.mateo.server.mock.service.authentication.UserDetailsImpl
 import io.jsonwebtoken.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import java.util.*
+
 
 @Component
 class JwtUtils {
 
-    private val jwtSecret: String = "mockserverSecretMateoFillThisIn"
-    private val jwtExpirationMs: Int = 600000
+    @Autowired
+    private lateinit var env: Environment
+    private val accs by lazy { env.getProperty("mockserver.accs") }
+    private val rfs by lazy { env.getProperty("mockserver.rfs") }
+    private val jwtExpirationMs by lazy { env.getProperty("mockserver.jwtExpirationMs")?.toInt() ?: 0 }
     private val logger = LoggerFactory.getLogger(JwtUtils::class.java)
 
+    fun generateRefreshToken(): String {
+        return Jwts.builder()
+            .signWith(SignatureAlgorithm.HS512, rfs)
+            .setIssuedAt(Date())
+            .compact()
+    }
     fun generateJwtToken(userPrincipal: UserDetailsImpl): String {
         return generateTokenFromUsername(userPrincipal.username)
     }
@@ -22,16 +34,16 @@ class JwtUtils {
             .setSubject(username)
             .setIssuedAt(Date())
             .setExpiration(Date(Date().time + jwtExpirationMs))
-            .signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .signWith(SignatureAlgorithm.HS512, accs)
             .compact()
     }
 
     fun getUserNameFromJwtToken(token: String?): String =
-        Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).body.subject
+        Jwts.parser().setSigningKey(accs).parseClaimsJws(token).body.subject
 
     fun validateJwtToken(authToken: String?): Boolean {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken)
+            Jwts.parser().setSigningKey(accs).parseClaimsJws(authToken)
             return true
         } catch (e: SignatureException) {
             logger.error("Invalid JWT signature: {}", e.message)

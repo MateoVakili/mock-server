@@ -4,12 +4,11 @@ import com.mateo.server.mock.config.error.MockServerExceptions
 import com.mateo.server.mock.entity.authentication.RefreshToken
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
+import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
-
 
 @Service
 class RefreshTokenService {
@@ -22,13 +21,16 @@ class RefreshTokenService {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+    @Autowired
+    lateinit var jwtUtils: JwtUtils
+
     fun findByToken(token: String) =
         refreshTokenRepository.findByToken(token)
 
     fun createRefreshToken(userId: Long) = RefreshToken().apply {
         userEntity = userRepository.findById(userId).get()
         expiryDate = Instant.now().plusMillis(refreshTokenDurationMs)
-        token = UUID.randomUUID().toString()
+        token = jwtUtils.generateRefreshToken()
         return refreshTokenRepository.save(this)
     }
 
