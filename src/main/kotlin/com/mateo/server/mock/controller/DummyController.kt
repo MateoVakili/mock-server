@@ -5,6 +5,7 @@ import com.mateo.server.mock.service.DummyServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,5 +22,10 @@ class DummyController {
     @PostMapping
     fun saveProduct(@RequestBody dummyEntity: DummyEntity): ResponseEntity<DummyEntity> {
         return ResponseEntity<DummyEntity>(dummyService.saveDummyEntity(dummyEntity), HttpStatus.CREATED)
+    }
+
+    @GetMapping
+    fun findAll(): ResponseEntity<List<DummyEntity>> {
+        return ResponseEntity<List<DummyEntity>>(dummyService.findAll(), HttpStatus.OK)
     }
 }

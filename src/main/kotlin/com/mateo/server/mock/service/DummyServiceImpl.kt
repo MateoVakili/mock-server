@@ -16,4 +16,6 @@ class DummyServiceImpl {
     fun saveDummyEntity(dummyEntity: DummyEntity): DummyEntity {
         return dummyRepository.save(dummyEntity)
     }
+
+    fun findAll() = dummyRepository.findAll()
 }

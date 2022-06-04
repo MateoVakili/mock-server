@@ -1,0 +1,22 @@
+package com.mateo.server.mock.service
+
+import com.mateo.server.mock.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class UserDetailsServiceImpl : UserDetailsService {
+    @Autowired
+    lateinit var userRepository: UserRepository
+
+    @Transactional
+    override fun loadUserByUsername(username: String): UserDetails {
+        userRepository.findByUsername(username)?.let {
+            return UserDetailsImpl.build(it)
+        } ?: throw UsernameNotFoundException("user not found with username: $username")
+    }
+}
