@@ -45,7 +45,7 @@ class AuthController {
     private val logger = LoggerFactory.getLogger(AuthenticationEntryPointJwt::class.java)
 
     @PostMapping("/login")
-    fun authenticateUser(@RequestBody loginRequest: @Valid RegistrationRequest): ResponseEntity<*> {
+    fun authenticateUser(@RequestBody loginRequest: @Valid RegistrationRequest): ResponseEntity<SigninResponse> {
         val authentication = authenticationManager
             .authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
         SecurityContextHolder.getContext().authentication = authentication
