@@ -30,15 +30,7 @@ class RefreshTokenService constructor(
         token = jwtUtils.generateRefreshToken()
         return refreshTokenRepository.save(this)
     }
-
-    @Transactional
-    fun removeUser(userName: String) {
-        userRepository.findByUsername(userName)?.let { userEntity ->
-            refreshTokenRepository.deleteByUserEntity(userEntity)
-            userEntity.id?.let { userRepository.deleteById(it) }
-        }
-    }
-
+    
     @Transactional
     fun replaceRefreshToken(currentRefreshToken: RefreshToken?) : RefreshToken {
         val currentToken = verifyExpiration(currentRefreshToken)

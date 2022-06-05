@@ -7,6 +7,7 @@ import com.mateo.server.mock.model.authentication.*
 import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.service.authentication.RefreshTokenService
 import com.mateo.server.mock.model.authentication.UserDetailsImpl
+import com.mateo.server.mock.service.authentication.UserDetailsServiceImpl
 import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -28,11 +29,11 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/authentication")
 class AuthController @Autowired constructor(
-    val authenticationManager: AuthenticationManager,
-    val userRepository: UserRepository,
-    val encoder: PasswordEncoder,
-    val jwtUtils: JwtUtils,
-    val refreshTokenService: RefreshTokenService,
+    private val authenticationManager: AuthenticationManager,
+    private val encoder: PasswordEncoder,
+    private val jwtUtils: JwtUtils,
+    private val refreshTokenService: RefreshTokenService,
+    private val userDetailsService: UserDetailsServiceImpl
 ) {
     @PostMapping("/login")
     fun authenticateUser(@RequestBody loginRequest: @Valid RegistrationRequest): ResponseEntity<SigninResponse> {
@@ -58,21 +59,16 @@ class AuthController @Autowired constructor(
 
     @PostMapping("/register")
     fun registerUser(@RequestBody signUpRequest: @Valid SignupRequest): ResponseEntity<*> {
-        if (userRepository.existsByUsername(signUpRequest.username)) {
-            throw MockServerExceptions.UserNameAlreadyTakenException(signUpRequest.username)
-        }
-        if (userRepository.existsByEmail(signUpRequest.email)) {
-            throw MockServerExceptions.EmailAlreadyTakenException(signUpRequest.email)
-        }
-        userRepository.save(
-            Userentity(
-                username = signUpRequest.username,
-                email = signUpRequest.email,
-                password = encoder.encode(signUpRequest.password),
-                role = RoleType.ROLE_USER.name
+        return ResponseEntity.ok(
+            userDetailsService.saveUser(
+                Userentity(
+                    username = signUpRequest.username,
+                    email = signUpRequest.email,
+                    password = encoder.encode(signUpRequest.password),
+                    role = RoleType.ROLE_USER.name
+                )
             )
         )
-        return ResponseEntity.noContent().build<Any>()
     }
 
     @PostMapping("/refresh-token")
@@ -94,7 +90,7 @@ class AuthController @Autowired constructor(
 
     @DeleteMapping("/delete")
     fun refreshToken(@RequestHeader("access_token") token: String): ResponseEntity<*> {
-        refreshTokenService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token))
+        userDetailsService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token))
         return ResponseEntity.ok().build<Any>()
     }
 }
