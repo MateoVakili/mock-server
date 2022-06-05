@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.*
 import java.util.stream.Collectors
 import javax.validation.Valid
 
-@CrossOrigin(origins = ["*"], maxAge = 3600)
+@CrossOrigin(
+    origins = [
+        "http://localhost:8080/",
+        "https://mock-server-fe.herokuapp.com/"
+    ], maxAge = 3600
+)
 @RestController
 @RequestMapping("/authentication")
-class AuthController @Autowired constructor (
+class AuthController @Autowired constructor(
     val authenticationManager: AuthenticationManager,
     val userRepository: UserRepository,
     val encoder: PasswordEncoder,
@@ -43,7 +48,8 @@ class AuthController @Autowired constructor (
                         id = userDetails.id,
                         username = userDetails.username,
                         email = userDetails.email,
-                        roles = userDetails.authorities.stream().map { item: GrantedAuthority? -> item!!.authority }.collect(Collectors.toList())
+                        roles = userDetails.authorities.stream().map { item: GrantedAuthority? -> item!!.authority }
+                            .collect(Collectors.toList())
                     )
                 )
             } ?: throw MockServerExceptions.RefreshTokenGenerationException
@@ -87,7 +93,7 @@ class AuthController @Autowired constructor (
     }
 
     @DeleteMapping("/delete")
-    fun refreshToken(@RequestHeader("access_token") token: String ): ResponseEntity<*> {
+    fun refreshToken(@RequestHeader("access_token") token: String): ResponseEntity<*> {
         refreshTokenService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token))
         return ResponseEntity.ok().build<Any>()
     }
