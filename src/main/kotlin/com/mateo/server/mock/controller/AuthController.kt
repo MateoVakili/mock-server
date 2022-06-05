@@ -8,9 +8,7 @@ import com.mateo.server.mock.model.authentication.*
 import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.service.authentication.RefreshTokenService
 import com.mateo.server.mock.service.authentication.UserDetailsImpl
-import com.mateo.server.mock.config.authentication.AuthenticationEntryPointJwt
 import com.mateo.server.mock.utils.JwtUtils
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,25 +23,13 @@ import javax.validation.Valid
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 @RestController
 @RequestMapping("/authentication")
-class AuthController {
-
-    @Autowired
-    lateinit var authenticationManager: AuthenticationManager
-
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var encoder: PasswordEncoder
-
-    @Autowired
-    lateinit var jwtUtils: JwtUtils
-
-    @Autowired
-    lateinit var refreshTokenService: RefreshTokenService
-
-    private val logger = LoggerFactory.getLogger(AuthenticationEntryPointJwt::class.java)
-
+class AuthController @Autowired constructor (
+    val authenticationManager: AuthenticationManager,
+    val userRepository: UserRepository,
+    val encoder: PasswordEncoder,
+    val jwtUtils: JwtUtils,
+    val refreshTokenService: RefreshTokenService,
+) {
     @PostMapping("/login")
     fun authenticateUser(@RequestBody loginRequest: @Valid RegistrationRequest): ResponseEntity<SigninResponse> {
         val authentication = authenticationManager
@@ -52,7 +38,6 @@ class AuthController {
         (authentication.principal as? UserDetailsImpl)?.let { userDetails ->
             val (_, _, token) = refreshTokenService.createRefreshToken(userDetails.id)
             token?.let { refreshToken ->
-                logger.info("Refresh token: $refreshToken was created for user: ${loginRequest.username}")
                 return ResponseEntity.ok(
                     SigninResponse(
                         accessToken = jwtUtils.generateJwtToken(userDetails),
@@ -60,8 +45,7 @@ class AuthController {
                         id = userDetails.id,
                         username = userDetails.username,
                         email = userDetails.email,
-                        roles = userDetails.authorities.stream().map { item: GrantedAuthority? -> item!!.authority }
-                            .collect(Collectors.toList())
+                        roles = userDetails.authorities.stream().map { item: GrantedAuthority? -> item!!.authority }.collect(Collectors.toList())
                     )
                 )
             } ?: throw MockServerExceptions.RefreshTokenGenerationException
