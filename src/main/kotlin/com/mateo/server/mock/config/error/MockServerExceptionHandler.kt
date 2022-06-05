@@ -77,7 +77,6 @@ class PostmanMockExceptionHandler : ResponseEntityExceptionHandler() {
         return ResponseEntity<Any>(apiError, HttpHeaders(), apiError.status)
     }
 
-
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders,
@@ -124,5 +123,17 @@ class PostmanMockExceptionHandler : ResponseEntityExceptionHandler() {
             builder.toString()
         )
         return ResponseEntity(apiError, HttpHeaders(), apiError.status)
+    }
+
+    @ExceptionHandler(Exception::class)
+    protected fun handleInternalError(
+        ex: Exception
+    ): ResponseEntity<Any> {
+        val apiError = MockServerApiError(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "something went wrong",
+            ex.message.toString()
+        )
+        return ResponseEntity<Any>(apiError, HttpHeaders(), apiError.status)
     }
 }

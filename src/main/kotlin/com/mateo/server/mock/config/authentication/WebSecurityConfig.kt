@@ -38,12 +38,15 @@ class WebSecurityConfig constructor(
         return Argon2PasswordEncoder()
     }
 
-    @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests().antMatchers("/authentication/login", "/authentication/register", "/authentication/refresh-token").permitAll()
+            .authorizeRequests().antMatchers(
+                "/authentication/login",
+                "/authentication/register",
+                "/authentication/refresh-token")
+            .permitAll()
             .anyRequest().authenticated()
         http.addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
