@@ -30,10 +30,9 @@ import javax.validation.Valid
 @RequestMapping("/authentication")
 class AuthController @Autowired constructor(
     private val authenticationManager: AuthenticationManager,
-    private val encoder: PasswordEncoder,
-    private val jwtUtils: JwtUtils,
     private val refreshTokenService: RefreshTokenService,
-    private val userDetailsService: UserDetailsServiceImpl
+    private val userDetailsService: UserDetailsServiceImpl,
+    private val jwtUtils: JwtUtils,
 ) {
     @PostMapping("/login")
     fun authenticateUser(@RequestBody loginRequest: @Valid RegistrationRequest): ResponseEntity<SigninResponse> {
@@ -59,16 +58,12 @@ class AuthController @Autowired constructor(
 
     @PostMapping("/register")
     fun registerUser(@RequestBody signUpRequest: @Valid SignupRequest): ResponseEntity<*> {
-        return ResponseEntity.ok(
-            userDetailsService.saveUser(
-                Userentity(
-                    username = signUpRequest.username,
-                    email = signUpRequest.email,
-                    password = encoder.encode(signUpRequest.password),
-                    role = RoleType.ROLE_USER.name
-                )
-            )
-        )
+        return ResponseEntity.ok(userDetailsService.saveUser(signUpRequest))
+    }
+
+    @DeleteMapping("/delete")
+    fun refreshToken(@RequestHeader("access_token") token: String): ResponseEntity<*> {
+        return ResponseEntity.ok(userDetailsService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token)))
     }
 
     @PostMapping("/refresh-token")
@@ -86,11 +81,5 @@ class AuthController @Autowired constructor(
                 )
             } else throw MockServerExceptions.GeneralException("Something went wrong with refresh token!")
         }
-    }
-
-    @DeleteMapping("/delete")
-    fun refreshToken(@RequestHeader("access_token") token: String): ResponseEntity<*> {
-        userDetailsService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token))
-        return ResponseEntity.ok().build<Any>()
     }
 }

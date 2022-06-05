@@ -1,7 +1,9 @@
 package com.mateo.server.mock.service.authentication
 
 import com.mateo.server.mock.config.error.MockServerExceptions
+import com.mateo.server.mock.entity.authentication.RoleType
 import com.mateo.server.mock.entity.authentication.Userentity
+import com.mateo.server.mock.model.authentication.SignupRequest
 import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
@@ -9,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.validation.Valid
 
 @Service
-class UserDetailsServiceImpl constructor(
-    @Autowired val userRepository: UserRepository,
-    @Autowired private val refreshTokenRepository: RefreshTokenRepository,
+class UserDetailsServiceImpl @Autowired constructor(
+    private val userRepository: UserRepository,
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val encoder: PasswordEncoder,
 ) : UserDetailsService {
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
@@ -32,10 +37,17 @@ class UserDetailsServiceImpl constructor(
         }
     }
 
-    fun saveUser(user: Userentity) {
-        validateEmail(user.email)
-        validateUserName(user.username)
-        userRepository.save(user)
+    fun saveUser(signUpRequest: SignupRequest) {
+        validateEmail(signUpRequest.email)
+        validateUserName(signUpRequest.username)
+        userRepository.save(
+            Userentity(
+                username = signUpRequest.username,
+                email = signUpRequest.email,
+                password = encoder.encode(signUpRequest.password),
+                role = RoleType.ROLE_USER.name
+            )
+        )
     }
 
     private fun validateEmail(email: String) {
