@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class RefreshTokenService constructor(
-    @Autowired private val refreshTokenRepository: RefreshTokenRepository,
-    @Autowired private val userRepository: UserRepository,
-    @Autowired private val jwtUtils: JwtUtils,
-    @Autowired private val env: Environment
+class RefreshTokenService @Autowired constructor(
+    private val userRepository: UserRepository,
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val jwtUtils: JwtUtils,
+    private val env: Environment
 ) {
 
     private val refreshTokenDurationMs by lazy { env.getProperty("mockserver.jwtRefreshExpirationMs")?.toLong() ?: 0L }

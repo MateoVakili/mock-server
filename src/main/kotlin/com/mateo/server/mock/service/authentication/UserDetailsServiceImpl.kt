@@ -20,7 +20,7 @@ import javax.validation.Valid
 class UserDetailsServiceImpl @Autowired constructor(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val encoder: PasswordEncoder,
+    private val encoder: PasswordEncoder
 ) : UserDetailsService {
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
