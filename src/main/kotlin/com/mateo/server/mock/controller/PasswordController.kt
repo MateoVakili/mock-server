@@ -1,7 +1,7 @@
 package com.mateo.server.mock.controller
 
-import com.mateo.server.mock.entity.password.PasswordGenerateResponse
-import com.mateo.server.mock.entity.password.PasswordGenerationRequest
+import com.mateo.server.mock.model.password.PasswordGenerateResponse
+import com.mateo.server.mock.model.password.PasswordGenerationRequest
 import com.mateo.server.mock.service.passwords.PasswordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
