@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RoleRepository : JpaRepository<Role, Long> {
     fun findByName(name: RoleType): Role?
+
+    fun deleteRoleById(id: Int)
 }

@@ -3,6 +3,7 @@ package com.mateo.server.mock.service.authentication
 import com.mateo.server.mock.config.error.MockServerExceptions
 import com.mateo.server.mock.entity.authentication.RefreshToken
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
+import com.mateo.server.mock.repository.authentication.RoleRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +23,9 @@ class RefreshTokenService {
     private lateinit var userRepository: UserRepository
 
     @Autowired
+    private lateinit var roleRepository: RoleRepository
+
+    @Autowired
     lateinit var jwtUtils: JwtUtils
 
     fun findByToken(token: String) =
@@ -32,6 +36,17 @@ class RefreshTokenService {
         expiryDate = Instant.now().plusMillis(refreshTokenDurationMs)
         token = jwtUtils.generateRefreshToken()
         return refreshTokenRepository.save(this)
+    }
+
+    @Transactional
+    fun removeTokenByUserId(userName: String) {
+        userRepository.findByUsername(userName)?.let { userEntity ->
+            refreshTokenRepository.deleteByUserEntity(userEntity)
+            userEntity.id?.let {
+                roleRepository.deleteRoleById(it.toInt())
+                userRepository.deleteById(it)
+            }
+        }
     }
 
     fun replaceRefreshToken(currentRefreshToken: RefreshToken?) : RefreshToken {

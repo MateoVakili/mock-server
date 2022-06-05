@@ -65,7 +65,7 @@ class AuthController {
                     )
                 )
             } ?: throw MockServerExceptions.RefreshTokenGenerationException
-        } ?:  throw MockServerExceptions.RefreshTokenGenerationException
+        } ?: throw MockServerExceptions.RefreshTokenGenerationException
     }
 
     @PostMapping("/register")
@@ -93,7 +93,7 @@ class AuthController {
         refreshTokenService.replaceRefreshToken(token).let { newRefreshToken ->
             val username = newRefreshToken.userEntity?.username
             val refreshToken = newRefreshToken.token
-            if(username != null && refreshToken != null) {
+            if (username != null && refreshToken != null) {
                 return ResponseEntity.ok(
                     TokenRefreshResponse(
                         accessToken = jwtUtils.generateTokenFromUsername(username),
@@ -102,5 +102,11 @@ class AuthController {
                 )
             } else throw MockServerExceptions.GeneralException("Something went wrong with refresh token!")
         }
+    }
+
+    @DeleteMapping("/delete")
+    fun refreshToken(@RequestHeader("access_token") token: String ): ResponseEntity<*> {
+        refreshTokenService.removeTokenByUserId(jwtUtils.getUserNameFromJwtToken(token))
+        return ResponseEntity.ok().build<Any>()
     }
 }

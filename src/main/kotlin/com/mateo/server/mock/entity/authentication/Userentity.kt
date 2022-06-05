@@ -27,7 +27,7 @@ data class Userentity(
     @Size(max = 120)
     var password: String,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinTable(
         name = "userentity_roles",
         joinColumns = [JoinColumn(name = "userentity_id")],
