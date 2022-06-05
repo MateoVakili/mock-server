@@ -35,8 +35,7 @@ class AuthController @Autowired constructor (
             .authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
         SecurityContextHolder.getContext().authentication = authentication
         (authentication.principal as? UserDetailsImpl)?.let { userDetails ->
-            val (_, _, token) = refreshTokenService.createRefreshToken(userDetails.id)
-            token?.let { refreshToken ->
+            refreshTokenService.createRefreshToken(userDetails.id).token?.let { refreshToken ->
                 return ResponseEntity.ok(
                     SigninResponse(
                         accessToken = jwtUtils.generateJwtToken(userDetails),
