@@ -6,7 +6,7 @@ import com.mateo.server.mock.entity.authentication.Userentity
 import com.mateo.server.mock.model.authentication.*
 import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.service.authentication.RefreshTokenService
-import com.mateo.server.mock.service.authentication.UserDetailsImpl
+import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

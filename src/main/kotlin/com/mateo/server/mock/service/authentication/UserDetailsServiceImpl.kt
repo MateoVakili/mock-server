@@ -1,5 +1,6 @@
 package com.mateo.server.mock.service.authentication
 
+import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import com.mateo.server.mock.repository.authentication.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails

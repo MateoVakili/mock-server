@@ -1,4 +1,4 @@
-package com.mateo.server.mock.service.authentication
+package com.mateo.server.mock.model.authentication
 
 import com.mateo.server.mock.entity.authentication.Userentity
 import org.springframework.security.core.GrantedAuthority
