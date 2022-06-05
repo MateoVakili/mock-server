@@ -8,7 +8,6 @@ import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import java.util.*
 
-
 @Component
 class JwtUtils constructor(
     @Autowired private val env: Environment
@@ -24,11 +23,11 @@ class JwtUtils constructor(
             .setIssuedAt(Date())
             .compact()
     }
-    fun generateJwtToken(userPrincipal: UserDetailsImpl): String {
-        return generateTokenFromUsername(userPrincipal.username)
+    fun generateJwtAccessToken(userPrincipal: UserDetailsImpl): String {
+        return generateAccessTokenFromUsername(userPrincipal.username)
     }
 
-    fun generateTokenFromUsername(username: String): String {
+    fun generateAccessTokenFromUsername(username: String): String {
         return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(Date())
@@ -37,10 +36,10 @@ class JwtUtils constructor(
             .compact()
     }
 
-    fun getUserNameFromJwtToken(token: String?): String =
+    fun getUserNameFromJwtAccessToken(token: String?): String =
         Jwts.parser().setSigningKey(accs).parseClaimsJws(token).body.subject
 
-    fun validateJwtToken(authToken: String?): Boolean {
+    fun validateJwtAccessToken(authToken: String?): Boolean {
         try {
             Jwts.parser().setSigningKey(accs).parseClaimsJws(authToken)
             return true
@@ -53,7 +52,7 @@ class JwtUtils constructor(
         } catch (e: UnsupportedJwtException) {
             logger.error("JWT token is unsupported: {}", e.message)
         } catch (e: IllegalArgumentException) {
-            logger.error("JWT claims string is empty: {}", e.message)
+            logger.debug("JWT claims string is empty: {}", e.message)
         }
         return false
     }

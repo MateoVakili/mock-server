@@ -38,7 +38,7 @@ class AuthController @Autowired constructor (
             refreshTokenService.createRefreshToken(userDetails.id).token?.let { refreshToken ->
                 return ResponseEntity.ok(
                     SigninResponse(
-                        accessToken = jwtUtils.generateJwtToken(userDetails),
+                        accessToken = jwtUtils.generateJwtAccessToken(userDetails),
                         refreshToken = refreshToken,
                         id = userDetails.id,
                         username = userDetails.username,
@@ -78,7 +78,7 @@ class AuthController @Autowired constructor (
             if (username != null && refreshToken != null) {
                 return ResponseEntity.ok(
                     TokenRefreshResponse(
-                        accessToken = jwtUtils.generateTokenFromUsername(username),
+                        accessToken = jwtUtils.generateAccessTokenFromUsername(username),
                         refreshToken = refreshToken
                     )
                 )
@@ -88,7 +88,7 @@ class AuthController @Autowired constructor (
 
     @DeleteMapping("/delete")
     fun refreshToken(@RequestHeader("access_token") token: String ): ResponseEntity<*> {
-        refreshTokenService.removeUser(jwtUtils.getUserNameFromJwtToken(token))
+        refreshTokenService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token))
         return ResponseEntity.ok().build<Any>()
     }
 }
