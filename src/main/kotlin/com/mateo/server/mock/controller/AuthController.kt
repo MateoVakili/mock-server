@@ -1,7 +1,6 @@
 package com.mateo.server.mock.controller
 
 import com.mateo.server.mock.config.error.MockServerExceptions
-import com.mateo.server.mock.entity.authentication.Role
 import com.mateo.server.mock.entity.authentication.RoleType
 import com.mateo.server.mock.entity.authentication.Userentity
 import com.mateo.server.mock.model.authentication.*
@@ -60,12 +59,12 @@ class AuthController @Autowired constructor (
         if (userRepository.existsByEmail(signUpRequest.email)) {
             throw MockServerExceptions.EmailAlreadyTakenException(signUpRequest.email)
         }
-        userRepository.save<Userentity>(
+        userRepository.save(
             Userentity(
                 username = signUpRequest.username,
                 email = signUpRequest.email,
                 password = encoder.encode(signUpRequest.password),
-                roles = hashSetOf(Role(name = RoleType.ROLE_USER, id = 1))
+                role = RoleType.ROLE_USER.name
             )
         )
         return ResponseEntity.noContent().build<Any>()
@@ -90,7 +89,7 @@ class AuthController @Autowired constructor (
 
     @DeleteMapping("/delete")
     fun refreshToken(@RequestHeader("access_token") token: String ): ResponseEntity<*> {
-        refreshTokenService.removeTokenByUserId(jwtUtils.getUserNameFromJwtToken(token))
+        refreshTokenService.removeUser(jwtUtils.getUserNameFromJwtToken(token))
         return ResponseEntity.ok().build<Any>()
     }
 }

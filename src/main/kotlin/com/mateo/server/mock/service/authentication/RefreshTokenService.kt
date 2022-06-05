@@ -3,33 +3,25 @@ package com.mateo.server.mock.service.authentication
 import com.mateo.server.mock.config.error.MockServerExceptions
 import com.mateo.server.mock.entity.authentication.RefreshToken
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
-import com.mateo.server.mock.repository.authentication.RoleRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class RefreshTokenService {
+class RefreshTokenService constructor(
+    @Autowired private val refreshTokenRepository: RefreshTokenRepository,
+    @Autowired private val userRepository: UserRepository,
+    @Autowired private val jwtUtils: JwtUtils,
+    @Autowired private val env: Environment
+) {
 
-    private val refreshTokenDurationMs: Long = 1200000
+    private val refreshTokenDurationMs by lazy { env.getProperty("mockserver.jwtRefreshExpirationMs")?.toLong() ?: 0L }
 
-    @Autowired
-    private lateinit var refreshTokenRepository: RefreshTokenRepository
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var roleRepository: RoleRepository
-
-    @Autowired
-    lateinit var jwtUtils: JwtUtils
-
-    fun findByToken(token: String) =
-        refreshTokenRepository.findByToken(token)
+    fun findByToken(token: String) = refreshTokenRepository.findByToken(token)
 
     fun createRefreshToken(userId: Long) = RefreshToken().apply {
         userEntity = userRepository.findById(userId).get()
@@ -39,13 +31,10 @@ class RefreshTokenService {
     }
 
     @Transactional
-    fun removeTokenByUserId(userName: String) {
+    fun removeUser(userName: String) {
         userRepository.findByUsername(userName)?.let { userEntity ->
             refreshTokenRepository.deleteByUserEntity(userEntity)
-            userEntity.id?.let {
-                roleRepository.deleteRoleById(it.toInt())
-                userRepository.deleteById(it)
-            }
+            userEntity.id?.let { userRepository.deleteById(it) }
         }
     }
 

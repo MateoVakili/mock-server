@@ -38,15 +38,12 @@ data class UserDetailsImpl(
 
     companion object {
         fun build(userEntity: Userentity): UserDetailsImpl {
-            val authorities = userEntity.roles
-                .map { role -> SimpleGrantedAuthority(role.name.name) }
-
             return UserDetailsImpl(
                 id = userEntity.id ?: 0,
                 email = userEntity.email,
                 username = userEntity.username,
                 password = userEntity.password,
-                authorities = authorities.toMutableList()
+                authorities = mutableListOf(SimpleGrantedAuthority(userEntity.role))
             )
         }
     }

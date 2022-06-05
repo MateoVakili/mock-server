@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserDetailsServiceImpl : UserDetailsService {
-    @Autowired
-    lateinit var userRepository: UserRepository
-
+class UserDetailsServiceImpl constructor(
+    @Autowired val userRepository: UserRepository
+) : UserDetailsService {
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
         userRepository.findByUsername(username)?.let {

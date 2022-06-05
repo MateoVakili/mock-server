@@ -3,6 +3,7 @@ package com.mateo.server.mock.entity.authentication
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
@@ -27,12 +28,7 @@ data class Userentity(
     @Size(max = 120)
     var password: String,
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
-    @JoinTable(
-        name = "userentity_roles",
-        joinColumns = [JoinColumn(name = "userentity_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")]
-    )
-    var roles: Set<Role> = HashSet()
+    @NotNull
+    var role: String
 )
 
