@@ -7,6 +7,7 @@ import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -38,13 +39,12 @@ class RefreshTokenService constructor(
         }
     }
 
+    @Transactional
     fun replaceRefreshToken(currentRefreshToken: RefreshToken?) : RefreshToken {
         val currentToken = verifyExpiration(currentRefreshToken)
         currentToken.userEntity?.id?.let { userId ->
-            val newToken = createRefreshToken(userId)
             refreshTokenRepository.delete(currentToken)
-            refreshTokenRepository.save(newToken)
-            return newToken
+            return refreshTokenRepository.save(createRefreshToken(userId))
         } ?: throw MockServerExceptions.GeneralException("invalid refresh token")
     }
 
@@ -54,10 +54,5 @@ class RefreshTokenService constructor(
             throw MockServerExceptions.RefreshTokenExpiredException
         }
         return token
-    }
-
-    @Transactional
-    fun deleteByUserId(userId: Long): Int {
-        return refreshTokenRepository.deleteByUserEntity(userRepository.findById(userId).get())
     }
 }
