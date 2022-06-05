@@ -18,18 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class WebSecurityConfig : WebSecurityConfigurerAdapter() {
-
-    @Autowired
-    lateinit var userDetailsService: UserDetailsServiceImpl
-
-    @Autowired
-    lateinit var unauthorizedHandler: AuthenticationEntryPointJwt
-
-    @Bean
-    fun authenticationJwtTokenFilter(): AuthenticationTokenFilter {
-        return AuthenticationTokenFilter()
-    }
+class WebSecurityConfig constructor(
+    @Autowired private val userDetailsService: UserDetailsServiceImpl,
+    @Autowired private val unauthorizedHandler: AuthenticationEntryPointJwt,
+    @Autowired private val authenticationJwtTokenFilter: AuthenticationTokenFilter
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
@@ -52,6 +45,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests().antMatchers("/authentication/login", "/authentication/register", "/authentication/refresh-token").permitAll()
             .anyRequest().authenticated()
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 }

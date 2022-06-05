@@ -10,10 +10,9 @@ import java.util.*
 
 
 @Component
-class JwtUtils {
-
-    @Autowired
-    private lateinit var env: Environment
+class JwtUtils constructor(
+    @Autowired private val env: Environment
+) {
     private val accs by lazy { env.getProperty("mockserver.accs") }
     private val rfs by lazy { env.getProperty("mockserver.rfs") }
     private val jwtExpirationMs by lazy { env.getProperty("mockserver.jwtExpirationMs")?.toInt() ?: 0 }
