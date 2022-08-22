@@ -4,7 +4,7 @@ import com.mateo.server.mock.config.error.MockServerExceptions
 import com.mateo.server.mock.entity.authentication.RefreshToken
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
-import com.mateo.server.mock.utils.JwtUtils
+import com.mateo.server.mock.service.authentication.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.security.crypto.password.PasswordEncoder

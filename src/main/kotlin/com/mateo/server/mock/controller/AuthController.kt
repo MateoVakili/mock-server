@@ -8,7 +8,7 @@ import com.mateo.server.mock.repository.authentication.UserRepository
 import com.mateo.server.mock.service.authentication.RefreshTokenService
 import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import com.mateo.server.mock.service.authentication.UserDetailsServiceImpl
-import com.mateo.server.mock.utils.JwtUtils
+import com.mateo.server.mock.service.authentication.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -63,7 +63,8 @@ class AuthController @Autowired constructor(
 
     @DeleteMapping("/delete")
     fun refreshToken(@RequestHeader("access_token") token: String): ResponseEntity<*> {
-        return ResponseEntity.ok(userDetailsService.removeUser(jwtUtils.getUserNameFromJwtAccessToken(token)))
+        val user = userDetailsService.loadUserByAccessToken(token)
+        return ResponseEntity.ok(userDetailsService.removeUser(user.username))
     }
 
     @PostMapping("/refresh-token")

@@ -1,7 +1,7 @@
 package com.mateo.server.mock.config.authentication
 
 import com.mateo.server.mock.service.authentication.UserDetailsServiceImpl
-import com.mateo.server.mock.utils.JwtUtils
+import com.mateo.server.mock.service.authentication.utils.JwtUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

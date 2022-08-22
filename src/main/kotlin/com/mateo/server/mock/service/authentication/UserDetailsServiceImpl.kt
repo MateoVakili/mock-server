@@ -7,6 +7,7 @@ import com.mateo.server.mock.model.authentication.SignupRequest
 import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import com.mateo.server.mock.repository.authentication.RefreshTokenRepository
 import com.mateo.server.mock.repository.authentication.UserRepository
+import com.mateo.server.mock.service.authentication.utils.JwtUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -20,20 +21,30 @@ import javax.validation.Valid
 class UserDetailsServiceImpl @Autowired constructor(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val encoder: PasswordEncoder
+    private val encoder: PasswordEncoder,
+    private val jwtUtils: JwtUtils,
 ) : UserDetailsService {
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
-        userRepository.findByUsername(username)?.let {
+        getUserIdByUsername(username)?.let {
             return UserDetailsImpl.build(it)
         } ?: throw UsernameNotFoundException("user not found with username: $username")
     }
 
     @Transactional
+    fun loadUserByAccessToken(token: String): Userentity {
+        getUserIdByUsername(jwtUtils.getUserNameFromJwtAccessToken(token))?.let {
+            return it
+        } ?: throw UsernameNotFoundException("user not found with this token")
+    }
+
+    @Transactional
     fun removeUser(userName: String) {
-        userRepository.findByUsername(userName)?.let { userEntity ->
-            refreshTokenRepository.deleteByUserEntity(userEntity)
-            userEntity.id?.let { userRepository.deleteById(it) }
+        getUserIdByUsername(userName)?.let { userEntity ->
+            userEntity.id?.let {
+                refreshTokenRepository.deleteAllByUserEntity(userEntity)
+                userRepository.deleteById(it)
+            }
         }
     }
 
@@ -49,6 +60,8 @@ class UserDetailsServiceImpl @Autowired constructor(
             )
         )
     }
+
+    fun getUserIdByUsername(userName: String) = userRepository.findByUsername(userName)
 
     private fun validateEmail(email: String) {
         if (userRepository.existsByEmail(email)) {

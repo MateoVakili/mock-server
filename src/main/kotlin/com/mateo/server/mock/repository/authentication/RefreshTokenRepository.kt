@@ -13,5 +13,5 @@ interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
     fun findByToken(token: String?): RefreshToken?
 
     @Modifying
-    fun deleteByUserEntity(userEntity: Userentity): Int
+    fun deleteAllByUserEntity(userEntity: Userentity): Int
 }

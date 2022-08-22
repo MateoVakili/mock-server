@@ -1,4 +1,4 @@
-package com.mateo.server.mock.utils
+package com.mateo.server.mock.service.authentication.utils
 
 import com.mateo.server.mock.model.authentication.UserDetailsImpl
 import io.jsonwebtoken.*
